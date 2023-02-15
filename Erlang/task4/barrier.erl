@@ -24,7 +24,9 @@ barrier_loop(Expected,Arrived) ->
         {arrive,Pid,Target,Ref} ->
             case lists:member(Target,Expected) of
                 true -> 
-                barrier_loop(fun()->lists:delete(Target,Expected)end,[{Pid,Ref} | Arrived]);
+                    NewList=lists:delete(Target,Expected),
+                    barrier_loop(NewList,[{Pid,Ref} | Arrived]);
+                % barrier_loop(fun()->lists:delete(Target,Expected)end,[{Pid,Ref} | Arrived]);
                 false->
                     Pid ! {continue,Ref}
                 end
@@ -55,3 +57,22 @@ do_c() ->
 
 do_more_c() -> 
 		io:format("Process C resumed~n").
+
+list_test(Exp) ->
+    io:format("List before deletion ~p~n",Exp).
+
+start_test(Exp) ->
+    spawn_link(fun () -> barrier_test(Exp) end).
+barrier_test(Expected) ->
+    receive
+        {arrive,Pid,Target,Ref} ->
+            case lists:member(Target,Expected) of
+                
+                true -> 
+                    io:format("Deleted item ~p~n",[Expected]),
+                    barrier_test(fun()->lists:delete(Target,Expected)end);
+                % barrier_loop(fun()->lists:delete(Target,Expected)end,[{Pid,Ref} | Arrived]);
+                false->
+                    Pid ! {continue,Ref}
+                end
+        end. 
