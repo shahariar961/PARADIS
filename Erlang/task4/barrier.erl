@@ -42,18 +42,24 @@ wait(Barrier,Pid) ->
     end.
 
 	    
-do_a() -> 
-		io:format("Process A started~n").
+do_a(Barrier,Ref) -> 
+		io:format("Process A started~n"),
+        barrier:wait(Barrier,Ref),
+        io:format("Process A resumed~n").
 
 do_more_a() -> 
 		io:format("Process A resumed~n").
-do_b() -> 
-		io:format("Process B started~n").
+do_b(Barrier,Ref) -> 
+		io:format("Process B started~n"),
+        barrier:wait(Barrier,Ref),
+        io:format("Process B resumed~n").
 
 do_more_b() -> 
 		io:format("Process B Resumed~n").
-do_c() -> 
-		io:format("Process C started~n").
+do_c(Barrier,Ref) -> 
+		io:format("Process C started~n"),
+        barrier:wait(Barrier,Ref),
+        io:format("Process C resumed~n").
 
 do_more_c() -> 
 		io:format("Process C resumed~n").
