@@ -1,6 +1,6 @@
 -module(allocator).
-
--export([start/1, request/2, release/2, test2/0, allocate_test/3]).
+-compile(export_all).
+% -export([start/1, request/2, release/2, test2/0, allocate_test/3]).
 
 start(Resources) ->
     spawn_link(fun () ->
@@ -24,12 +24,27 @@ release(Pid, Resources) ->
     end.
 
 
+% allocator(Resources) ->
+%     receive
+% 	{request, {Pid, Ref, N}} when N =< length(Resources) ->
+% 	    {G, R} = lists:split(N, Resources),
+% 	    Pid ! {granted, Ref, G},
+% 	    allocator(R);
+% 	{release, {Pid, Ref, Released}} ->
+% 	    Pid ! {released, Ref},
+% 	    allocator(Released ++ Resources)
+%     end.
+
 allocator(Resources) ->
+    Alloc=[]
     receive
-	{request, {Pid, Ref, N}} when N =< length(Resources) ->
-	    {G, R} = lists:split(N, Resources),
-	    Pid ! {granted, Ref, G},
-	    allocator(R);
+	{request, {Pid, Ref, N}} ->
+        case N of
+            N when is_list(N,Resources),lists:foreach(fun(X)-> is_map_key(X,Resources)end,N) ->
+                
+	            {G, R} = lists:split(N, Resources),
+	            Pid ! {granted, Ref, G},
+	            allocator(R);
 	{release, {Pid, Ref, Released}} ->
 	    Pid ! {released, Ref},
 	    allocator(Released ++ Resources)
