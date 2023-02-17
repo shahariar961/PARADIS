@@ -12,7 +12,8 @@ request(Pid, N) ->
     Pid ! {request, {self(), Ref, N}},
     receive
 	{granted, Ref, Granted} ->
-	    Granted
+	    io:format("Granted~p~n",[Granted])
+
     end.
 
 release(Pid, Resources) ->
@@ -36,18 +37,23 @@ release(Pid, Resources) ->
 %     end.
 
 allocator(Resources) ->
-    Alloc=[]
     receive
-	{request, {Pid, Ref, N}} ->
-        case N of
-            N when is_list(N,Resources),lists:foreach(fun(X)-> is_map_key(X,Resources)end,N) ->
-                
-	            {G, R} = lists:split(N, Resources),
-	            Pid ! {granted, Ref, G},
-	            allocator(R);
+	{request, {Pid, Ref, N}} when is_list(N) ->
+                        case lists:all(fun(X) ->maps:is_key(X,Resources) end,N) of
+                            true->
+                               UpdatedResources= lists:foldl(fun(Key, Acc) -> maps:remove(Key, Acc) end, Resources, N),
+                                % lists:foreach(fun(X)->  maps:remove(X,Resources) end,N),
+                                Pid ! {granted,Ref,N},
+	                            allocator(UpdatedResources);
+                            _->
+                                allocator(Resources)
+                        end;
+            
 	{release, {Pid, Ref, Released}} ->
 	    Pid ! {released, Ref},
-	    allocator(Released ++ Resources)
+        Merged=maps:merge(Released,Resources),
+	    allocator(Merged)
+    
     end.
 			     
 test2() ->
