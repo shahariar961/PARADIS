@@ -23,25 +23,30 @@ class PrimeFinder implements Runnable {
     }
 
     static boolean isPrime(long number) {
-        boolean result = true;
-        for (long d = 2; d < Math.sqrt(number); d++) {
-            if (number % d == 0)
-                result = false;
+        if (number <= 1) {
+            return false;
         }
-        return result;
+        for (long d = 2; d <= number; d++) {
+            if (number % d == 0 && d != number) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void run() {
         BigInteger number = min;
         while (number.compareTo(max) <= 0) {
-            if (product.remainder(number).compareTo(BigInteger.ZERO) == 0 ) {
+            if (product.remainder(number).compareTo(BigInteger.ZERO) == 0) {
                 BigInteger otherFactor = product.divide(number);
                 if (isPrime(otherFactor.longValue())) {
                     factor1 = number;
                     factor2 = otherFactor;
                     return;
-                }else{
-                    
+                }
+                else if (isPrime(number.longValue())) {
+                    factor1 = number;
+                    factor2 = otherFactor;
                 }
             }
             number = number.add(BigInteger.valueOf(step));
@@ -83,10 +88,15 @@ class PrimeFinder implements Runnable {
 
             // Output results.
             int numProcessors = Runtime.getRuntime().availableProcessors();
+        if (primeFinders[0].factor1.isProbablePrime(10) && primeFinders[0].factor2.isProbablePrime(10)) {
             System.out.println("Prime factors of product " + product + ": " + primeFinders[0].factor1 + " and " + primeFinders[0].factor2);
-            System.out.println("Available processors: " + numProcessors);
-            System.out.println("Number of threads: " + numThreads);
-            System.out.println("Execution time (seconds): " + (stop-start)/1.0E9);
+        }
+        else {
+            System.out.println("Non-prime factors of product " + product + ": " + primeFinders[0].factor1 + " and " + primeFinders[0].factor2);
+        }
+        System.out.println("Available processors: " + numProcessors);
+        System.out.println("Number of threads: " + numThreads);
+        System.out.println("Execution time (seconds): " + (stop-start)/1.0E9);
         }
         catch (Exception exception) {
             System.out.println(exception);
