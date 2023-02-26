@@ -3,17 +3,17 @@ import java.io.InputStreamReader;
 import java.math.BigInteger;
 
 class PrimeFinder implements Runnable {
-    private final static long MIN = 1;
-    private final static long MAX = 2000000;
+    
 
-    private long min;
-    private long max;
+    private BigInteger min;
+    private BigInteger max;
     private int step;
     private BigInteger product;
     private BigInteger factor1;
     private BigInteger factor2;
 
-    PrimeFinder(long min, long max, int step, BigInteger product) {
+
+    PrimeFinder(BigInteger min, BigInteger max, int step, BigInteger product) {
         this.min = min;
         this.max = max;
         this.step = step;
@@ -32,12 +32,17 @@ class PrimeFinder implements Runnable {
     }
 
     public void run() {
-        BigInteger number = BigInteger.valueOf(min);
-        while (number.compareTo(BigInteger.valueOf(max)) <= 0) {
-            if (product.remainder(number).compareTo(BigInteger.ZERO) == 0 && isPrime(number.longValue()) && isPrime(product.divide(number).longValue())) {
-                factor1 = number;
-                factor2 = product.divide(factor1);
-                return;
+        BigInteger number = min;
+        while (number.compareTo(max) <= 0) {
+            if (product.remainder(number).compareTo(BigInteger.ZERO) == 0 ) {
+                BigInteger otherFactor = product.divide(number);
+                if (isPrime(otherFactor.longValue())) {
+                    factor1 = number;
+                    factor2 = otherFactor;
+                    return;
+                }else{
+                    
+                }
             }
             number = number.add(BigInteger.valueOf(step));
         }
@@ -61,7 +66,7 @@ class PrimeFinder implements Runnable {
             Thread[] threads = new Thread[numThreads];
             PrimeFinder[] primeFinders = new PrimeFinder[numThreads];
             for (int i = 0; i < numThreads; i++) {
-                primeFinders[i] = new PrimeFinder(MIN + i, MAX, numThreads, product);
+                primeFinders[i] = new PrimeFinder(BigInteger.ONE, product, numThreads, product);
                 threads[i] = new Thread(primeFinders[i]);
             }
 
@@ -78,7 +83,6 @@ class PrimeFinder implements Runnable {
 
             // Output results.
             int numProcessors = Runtime.getRuntime().availableProcessors();
-            System.out.println("Range searched: " + MIN + " - " + MAX);
             System.out.println("Prime factors of product " + product + ": " + primeFinders[0].factor1 + " and " + primeFinders[0].factor2);
             System.out.println("Available processors: " + numProcessors);
             System.out.println("Number of threads: " + numThreads);
