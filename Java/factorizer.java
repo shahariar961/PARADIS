@@ -1,3 +1,4 @@
+//Fahim Shahariar Nahin
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
@@ -22,33 +23,15 @@ class PrimeFinder implements Runnable {
         this.factor2 = BigInteger.ZERO;
     }
 
-    static boolean isPrime(long number) {
-        if (number <= 1) {
-            return false;
-        }
-        for (long d = 2; d <= number; d++) {
-            if (number % d == 0 && d != number) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void run() {
         BigInteger number = min;
         while (number.compareTo(max) <= 0) {
             if (product.remainder(number).compareTo(BigInteger.ZERO) == 0) {
                 BigInteger otherFactor = product.divide(number);
-                if (isPrime(otherFactor.longValue())) {
                     factor1 = number;
                     factor2 = otherFactor;
                     return;
                 }
-                else if (isPrime(number.longValue())) {
-                    factor1 = number;
-                    factor2 = otherFactor;
-                }
-            }
             number = number.add(BigInteger.valueOf(step));
         }
     }
@@ -68,10 +51,16 @@ class PrimeFinder implements Runnable {
             long start = System.nanoTime();
 
             // Create threads.
+            if (product.isProbablePrime(10)){
+                System.out.println("Number is Prime, No Factorization is Possible");
+            }
+            else {
             Thread[] threads = new Thread[numThreads];
             PrimeFinder[] primeFinders = new PrimeFinder[numThreads];
+            BigInteger tempMin= BigInteger.valueOf( 2);
+            
             for (int i = 0; i < numThreads; i++) {
-                primeFinders[i] = new PrimeFinder(BigInteger.ONE, product, numThreads, product);
+                primeFinders[i] = new PrimeFinder(tempMin, product, numThreads, product);
                 threads[i] = new Thread(primeFinders[i]);
             }
 
@@ -88,6 +77,7 @@ class PrimeFinder implements Runnable {
 
             // Output results.
             int numProcessors = Runtime.getRuntime().availableProcessors();
+        
         if (primeFinders[0].factor1.isProbablePrime(10) && primeFinders[0].factor2.isProbablePrime(10)) {
             System.out.println("Prime factors of product " + product + ": " + primeFinders[0].factor1 + " and " + primeFinders[0].factor2);
         }
@@ -98,8 +88,10 @@ class PrimeFinder implements Runnable {
         System.out.println("Number of threads: " + numThreads);
         System.out.println("Execution time (seconds): " + (stop-start)/1.0E9);
         }
+    }
         catch (Exception exception) {
             System.out.println(exception);
         }
     }
+    
 }
