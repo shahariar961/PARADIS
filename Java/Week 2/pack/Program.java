@@ -68,39 +68,39 @@ public class Program {
 	}
 	
 	// You may use this to test transactions.
-	private static void runTestTransactions() {
-		ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+	// private static void runTestTransactions() {
+	// 	ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 		
-		Transaction[] transactions = new Transaction[NUM_TRANSACTIONS];
-		for (int i = 0; i < NUM_TRANSACTIONS; i++) {
-			transactions[i] = new Transaction();
-			transactions[i].add(withdrawals[i % NUM_ACCOUNTS]);
-			transactions[i].add(deposits[(i + 1) % NUM_ACCOUNTS]);
-			transactions[i].close();
-		}
+	// 	Transaction[] transactions = new Transaction[NUM_TRANSACTIONS];
+	// 	for (int i = 0; i < NUM_TRANSACTIONS; i++) {
+	// 		transactions[i] = new Transaction();
+	// 		transactions[i].add(withdrawals[i % NUM_ACCOUNTS]);
+	// 		transactions[i].add(deposits[(i + 1) % NUM_ACCOUNTS]);
+	// 		transactions[i].close();
+	// 	}
 
-		try {
-			long time = System.nanoTime();
-			for (int i = 0; i < NUM_TRANSACTIONS; i++) {
-				executor.execute(transactions[i]);
-			}
-			executor.shutdown();
-			boolean completed = executor.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
-			time = System.nanoTime() - time;
+	// 	try {
+	// 		long time = System.nanoTime();
+	// 		for (int i = 0; i < NUM_TRANSACTIONS; i++) {
+	// 			executor.execute(transactions[i]);
+	// 		}
+	// 		executor.shutdown();
+	// 		boolean completed = executor.awaitTermination(TIMEOUT, TimeUnit.SECONDS);
+	// 		time = System.nanoTime() - time;
 			
-			System.out.println("Test transactions finished.");
-			System.out.println("Completed: " + completed);
-			System.out.println("Time [ms]: " + time / 1000000);
+	// 		System.out.println("Test transactions finished.");
+	// 		System.out.println("Completed: " + completed);
+	// 		System.out.println("Time [ms]: " + time / 1000000);
 			
-			for (int i = 0; i < NUM_ACCOUNTS; i++) {
-				int balance = bank.getAccount(accountIds[i]).getBalance();
-				System.out.println("Account: " + accountIds[i] + "; Balance: " + balance);
-			}
-		}
-		catch (Exception exception) {
-			exception.printStackTrace();
-		}
-	}
+	// 		for (int i = 0; i < NUM_ACCOUNTS; i++) {
+	// 			int balance = bank.getAccount(accountIds[i]).getBalance();
+	// 			System.out.println("Account: " + accountIds[i] + "; Balance: " + balance);
+	// 		}
+	// 	}
+	// 	catch (Exception exception) {
+	// 		exception.printStackTrace();
+	// 	}
+	// }
 	
 	// Entry point.
 	public static void main(String[] args) {
