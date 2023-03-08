@@ -1,4 +1,4 @@
-// Peter Idestam-Almquist, 2023-02-26.
+// Fahim Shahariar Nahin, 2023-03-08.
 
 package pack;
 
@@ -11,7 +11,8 @@ class Bank {
  
 	
 	// Instance methods.
-	int newAccount(int balance) {
+	//We use synchronized here so that if multiple threads are creating accounts it is still kept threadsafe
+	synchronized int newAccount(int balance) {
         
 		
 			int accountId = accounts.size();
@@ -19,7 +20,7 @@ class Bank {
 			return accountId;
 		}
 
-	Account getAccount(int accountId) {
+	synchronized Account getAccount(int accountId) {
 		Account account = accounts.get(accountId);
 		return account;
 		}
