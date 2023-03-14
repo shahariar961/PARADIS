@@ -1,0 +1,9 @@
+Question1: Which of the two programs, Program1 and Program2, has best performance, or are the
+performance of the two programs about the same?
+
+Ans: Program 2 has almost 2 times faster execution time than Program 1 even though they are using the same Forkcommonlpool
+
+Question2: Is there any difference in which order different work tasks are performed in the two
+different solutions, Program1 and Program2?
+
+Ans: In program1 half of the available threads first download the first objects and then as soon as object is taken  from the first blocking queue and analyzed and put into the second blocking queue the threads are then spread evenly and the objects are downloaded analyzed and categorized concurrently untill the first blocking queue is empty. In program2 all the objects are first downloaded concurrently by.
