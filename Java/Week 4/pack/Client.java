@@ -1,7 +1,7 @@
 // Peter Idestam-Almquist, 2021-03-07.
 // Client, two-threaded, responsive to incoming messages.
 
-package paradis.assignment4;
+package pack;
 
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -62,13 +62,15 @@ class Client implements Runnable {
 			thread.start();
 			
 			// Send messages.
+			// String threadInfo = " (" + Thread.currentThread().getName() + ").";
 			String threadInfo = " (" + Thread.currentThread().getName() + ").";
+
 			consoleReader = new BufferedReader(new InputStreamReader(System.in));
 			String message = consoleReader.readLine();
 			while (message != null && !message.equals("close")) {
 				if (message != null && !message.isEmpty()) {
 					socketWriter.println(message);
-					System.out.println("Sent: \"" + message + "\"" + threadInfo);
+					// System.out.println("Sent: \"" + message + "\"" + threadInfo);
 				}
 				message = consoleReader.readLine();
 			}

@@ -1,7 +1,7 @@
 // Peter Idestam-Almquist, 2021-03-07.
 // Server, multi-threaded, accepting several simultaneous clients.
 
-package paradis.assignment4;
+package pack;
 
 import java.net.Socket;
 import java.net.ServerSocket;
@@ -34,9 +34,7 @@ class EchoServer implements Runnable {
 		BufferedReader socketReader = null;
 		try {
 			socketWriter = new PrintWriter(clientSocket.getOutputStream(), true);                   
-            socketReader = new BufferedReader(
-				new InputStreamReader(clientSocket.getInputStream())
-			);
+            socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 			String threadInfo = " (" + Thread.currentThread().getName() + ").";
             String inputLine = socketReader.readLine();
@@ -47,9 +45,9 @@ class EchoServer implements Runnable {
 			clientName = inputLine;
 			
             while (inputLine != null) {
-				socketWriter.println(inputLine);
+				socketWriter.println("client name: " + clientName + "input: " + inputLine);
 				System.out.println("Sent: \"" + inputLine + "\" to " 
-					+ clientName + " " + remoteSocketAddress + threadInfo);
+					+ clientName + " " + remoteSocketAddress + clientName);
 				inputLine = socketReader.readLine();
 				System.out.println("Received: \"" + inputLine + "\" from " 
 					+ clientName + " " + remoteSocketAddress + threadInfo);
