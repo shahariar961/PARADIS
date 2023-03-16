@@ -12,10 +12,13 @@ import java.io.BufferedReader;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 class EchoServer implements Runnable {
 	private final static int PORT = 8000;
 	private final static int MAX_CLIENTS = 5;
 	private final static Executor executor = Executors.newFixedThreadPool(MAX_CLIENTS);
+	private final static ConcurrentHashMap<Socket, String> map = new ConcurrentHashMap<>();
 	
 	private final Socket clientSocket;
 	private String clientName = "";
@@ -43,11 +46,22 @@ class EchoServer implements Runnable {
 				
 			// First message is client name.
 			clientName = inputLine;
+
+			map.put(clientSocket, clientName);
 			
             while (inputLine != null) {
-				socketWriter.println("client name: " + clientName + "input: " + inputLine);
+				// socketWriter.println("client name: " + clientName + " input: " + inputLine);
 				System.out.println("Sent: \"" + inputLine + "\" to " 
-					+ clientName + " " + remoteSocketAddress + clientName);
+					+ clientName + " " + remoteSocketAddress + clientName + "\n");
+
+				for (ConcurrentHashMap.Entry<Socket, String> entry : map.entrySet()) {
+					// System.out.println("Socket: " + entry.getKey() + ", Name: " + entry.getValue());
+
+					// socketWriter = new PrintWriter(entry.getKey().getOutputStream(), true);
+
+					new PrintWriter(entry.getKey().getOutputStream(), true).println("client name: " + clientName + " input: " + inputLine);
+				}
+
 				inputLine = socketReader.readLine();
 				System.out.println("Received: \"" + inputLine + "\" from " 
 					+ clientName + " " + remoteSocketAddress + threadInfo);
