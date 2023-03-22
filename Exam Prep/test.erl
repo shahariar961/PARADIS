@@ -10,7 +10,7 @@
 
 % search(F,[H|T]) -> search(F,t[H|T],[]).
 search(F,[H|T])-> search(F,[H|T],[]).
-search(_F,[],Acc)-> Acc;
+search(_F,[],Acc)-> lists:reverse(Acc);
 search(F,[H|T],Acc) ->
     case filter(F,H) of
     true -> search(F,T,[H|Acc]);
@@ -23,13 +23,50 @@ filter(F,[H|T])->
         false -> filter(F,T)
     end.
 
+% do_work(_F,[])->
+%     false;
+do_work(F,L)->
+    case list:all(F,L) of
+        true->true;
+        false->false
+    end.
+
+worker2() ->
+    receive
+        {work,Pid,F,List,Counter} ->
+            case lists:all(F,List) of
+                true-> Pid ! {go,List,Counter};
+                false -> Pid ! {nogo,List,Counter}
+            end
+        end.
+
+psearch(F,List,Threads)->
+    % case Threads> length(List) of
+    % true ->
+        psearch(F,List,length(List),1).
+    % false ->
+    % end.
+psearch(_F,[],Length,Counter) -> gather2([],Length,Counter);
+psearch(F,[H|T],Length,Counter)->
+    Pid=spawn(fun worker2/0),
+    Pid ! {work,self(),F,H,Counter},
+    psearch(F,T,Length,Counter+1).
+
+gather2(Lists,0,_Counter)-> Lists;
+gather2(Lists,Length,_Counter)->
+    receive
+        {go,List,Counter}->gather2([List|Lists],Length-1);
+        {nogo,_List,Counter}->  gather2(Lists,Length-1)
+    end.
+
+
 % zip_filter/3 that takes three arguments: a function with two arguments and two lists,
 % and returns a new list with the function applied to filter the corresponding elements in the
 % list. That is, the function is applied to pairs of elements from both lists and filter (from
 % both lists) elements for which the function returns true. The function should only accept
 % lists of the same length.
 % Example:
-% zip_filter(fun (A, B) -> A + B > 3 end,  2, 3], [2[1,, 3, 1]).
+% zip_filter(fun (A, B) -> A + B > 3 end, [2, 2, 3], [1, 3, 1]).
 % should return the tuple {[2, 3], [3, 1]}.
 
 zip(F,A,B) -> zip(F,A,B,[],[]).
@@ -62,4 +99,41 @@ zip_map(F1,F2,[H|T],[B|N],Acc1,Acc2) ->
     zip_map(F1,F2,T,N,[F1(H,B)|Acc1],Acc2).
 
 % zip_map(fun (A, B) -> A * B end, fun (X, Y) -> X + Y end,[1, 2, 3],[10, 20, 30]).
+
+do_work(F,A,B) ->
+    case F(A,B) of
+        true -> A,B;
+        false ->ok
+    end.
+
+worker()->
+    receive 
+        {work,Pid,F,A,B} ->
+            case F(A,B) of
+                true ->Pid ! {go,A,B};
+                false ->Pid !{nogo,A,B}
+            end
+        
+    end.
+
+pzip(F,A,B) -> pzip(F,A,B,length(A)).
+pzip(F,[],[],Length)->
+    gather([],[],Length);
+pzip(F,[H1|T1],[H2|T2],Length) ->
+    Pid = spawn(fun worker/0),
+    Pid ! {work,self(),F,H1,H2},
+    pzip(F,T1,T2,Length).
+
+gather(L1,L2,0)->
+    {lists:reverse(L1),lists:reverse(L2)};
+gather(L1,L2,Length) ->
+    receive
+        {go,A,B} ->
+            gather([A|L1],[B|L2],Length-1);
+        {nogo,A,B}->
+            gather(L1,L2,Length-1)
+
+        end.
+
+
 

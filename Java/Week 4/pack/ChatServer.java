@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-class EchoServer implements Runnable {
+class ChatServer implements Runnable {
 	private final static int PORT = 8000;
 	private final static int MAX_CLIENTS = 5;
 	private final static Executor executor = Executors.newFixedThreadPool(MAX_CLIENTS);
@@ -23,7 +23,7 @@ class EchoServer implements Runnable {
 	private final Socket clientSocket;
 	private String clientName = "";
 	
-	private EchoServer(Socket clientSocket) {
+	private ChatServer(Socket clientSocket) {
 		this.clientSocket = clientSocket;
 	}
 	
@@ -55,11 +55,9 @@ class EchoServer implements Runnable {
 					+ clientName + " " + remoteSocketAddress + clientName + "\n");
 
 				for (ConcurrentHashMap.Entry<Socket, String> entry : map.entrySet()) {
-					// System.out.println("Socket: " + entry.getKey() + ", Name: " + entry.getValue());
 
-					// socketWriter = new PrintWriter(entry.getKey().getOutputStream(), true);
 
-					new PrintWriter(entry.getKey().getOutputStream(), true).println("client name: " + clientName + " input: " + inputLine);
+					new PrintWriter(entry.getKey().getOutputStream(), true).println( clientName + " : " + inputLine);
 				}
 
 				inputLine = socketReader.readLine();
@@ -88,7 +86,7 @@ class EchoServer implements Runnable {
 	}
 
     public static void main(String[] args) {
-		System.out.println("EchoServer started.");
+		System.out.println("ChatServer started.");
 
 		ServerSocket serverSocket = null;
 		Socket clientSocket = null;
@@ -99,7 +97,7 @@ class EchoServer implements Runnable {
             
 			while (true) {
 				clientSocket = serverSocket.accept();     
-				executor.execute(new EchoServer(clientSocket));
+				executor.execute(new ChatServer(clientSocket));
 			}
         } 
 		catch (Exception exception) {
