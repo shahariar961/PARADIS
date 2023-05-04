@@ -1,5 +1,5 @@
-	// Peter Idestam-Almquist, 2023-03-19.
-
+/* Here we replaced the normal Array with an Array blocking queue´, and we have modified the methods next(), isEmpty(), isFull() add(), remove() to use the methods provided by the Array Blocking Queue to conduct thread safe atomic operations on the array. We have also changed the forEach method since we cannot navigate a blocking queue using an index, thus we have created a iterator instance that iterates through the queue. We have modified the inner class MyIterator to use the blocking queue method toArray() to create a copy of the array then iterate through that.*/
+// Peter Idestam-Almquist, 2023-03-19.
 	package paradis.exam230320.task3;
 
 	import java.util.function.Consumer;
@@ -15,22 +15,30 @@
 		private int length = 6; 
 		private int first = 0;
 		private int last = length - 1;
-		private ArrayBlockingQueue<E> myArray = new ArrayBlockingQueue<>(length); // NEW
 		//private Object[] myArray;
+		private ArrayBlockingQueue<E> myArray = new ArrayBlockingQueue<>(length); // NEW
+		
 
 		// Inner class MyIterator.
 		class MyIterator<E> implements Iterator<E> {
+
 			// MyIterator instance variables.
+
 			private int index;
+
 			// MyIterator constructor.
+
 			private MyIterator() {
 				index = first;
 			}	
+
 			// MyIterator instance methods.
+
 			public boolean hasNext() {
 
 				return index != nextIndex(last);
 			}
+
 			@SuppressWarnings("unchecked")
 			public E next() {
 				//E element = (E)myArray[index];
@@ -39,11 +47,14 @@
 				return element;
 			}
 		}
+
 		// MyQueue constructor.
 		public MyQueue() {
 			//myArray = new Object[length];
 		}
+
 		// MyQueue instance methods.
+
 		// Next position when regarding the array as a circle.
 		private int nextIndex(int index) {
 			if (index == length - 1)
@@ -52,15 +63,18 @@
 				return index + 1;
 		}
 		// Check if the queue is empty.
+
 		public boolean isEmpty() {
 			//return nextIndex(last) == first;
 			return myArray.isEmpty(); //NEW
 		}
+		
 		// Check if the queue is full.
 		public boolean isFull() {
 			//return nextIndex(nextIndex(last)) == first;
 			return myArray.remainingCapacity() == 0 ; //NEW
-		}		
+		}	
+
 		// Add an element last in the queue.
 		public boolean add(E element) {
 			//if (isFull())
@@ -75,20 +89,24 @@
 			}
 			return true;
 		}
+
 		// Remove and return the first element in the queue.
+
 		@SuppressWarnings("unchecked")
 		public E remove() {
 			//if (isEmpty())
+				// return null;
+			//Object element = myArray[first];
+			//first = nextIndex(first);
+			//return (E)element;
 			try{	//NEW
 				return myArray.take(); //NEW
 			} catch (InterruptedException e) { // NEW
 
 			
-				return null;
+				return null;  // NEW
 			}
-			//bject element = myArray[first];
-			//first = nextIndex(first);
-			//return (E)element;
+			
 		}
 		// Perform the action for each element.
 		@SuppressWarnings("unchecked")
