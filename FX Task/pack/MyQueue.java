@@ -1,13 +1,13 @@
 	// Peter Idestam-Almquist, 2023-03-19.
 
-	package pack;
+	package paradis.exam230320.task3;
 
 	import java.util.function.Consumer;
 	import java.util.Iterator;
 	import java.util.concurrent.ArrayBlockingQueue; //NEW		
 	;
 	// Representing a queue with some methods.
-	class MyQueue<E> {
+	 class MyQueue<E> {
 		
 		// MyQueue instance variables.
 		
@@ -92,21 +92,18 @@
 		}
 		// Perform the action for each element.
 		@SuppressWarnings("unchecked")
-		// public void forEach(Consumer<E> action) {
-		// 	int index = first;
-		// 	while (index != nextIndex(last)) {
-		// 		//action.accept((E)myArray[index]);
-		// 		action.accept(myArray.toArray((E[]) new Object[myArray.size()])[index]); // NEW
-		// 		index = nextIndex(index);
-		// 	}
-		// }
-
 		public void forEach(Consumer<E> action) {
-			Iterator<E> iterator = myArray.iterator();
-			while (iterator.hasNext()) {
-				action.accept(iterator.next());
+			//int index = first;
+			Iterator<E> iterator = myArray.iterator(); // NEW
+			//while (index != nextIndex(last)) {
+			while (iterator.hasNext()) {  // NEW
+				//action.accept((E)myArray[index]);
+				//index = nextIndex(index);
+				action.accept(iterator.next()); // NEW
 			}
 		}
+
+
 		// Returns an iterator over the elements.
 		public Iterator<E> iterator() {
 			return new MyIterator<E>();

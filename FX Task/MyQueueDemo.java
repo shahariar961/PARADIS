@@ -1,4 +1,4 @@
-package pack;
+import pack.MyQueue;
 import java.util.Random;
 
 public class MyQueueDemo {
